@@ -14,7 +14,9 @@ import java.util.Random;
 
 public class FlappyBird extends ApplicationAdapter {
 	SpriteBatch batch;
-	Texture background;
+	Texture background1;
+	Texture background2;
+	float backgroundVelocity = 3;
 	Texture[] birds;
 	int flapState = 0;
 	float birdY;
@@ -43,10 +45,19 @@ public class FlappyBird extends ApplicationAdapter {
 	Rectangle[] topTubeRectangle;
 	Rectangle[] bottomTubeRectangle;
 
+	short backgroundOffset;
+	float screenWidth;
+	float screenHeight;
+
 	@Override
 	public void create () {
 		batch = new SpriteBatch();
-		background = new Texture("bg.png");
+		screenWidth = Gdx.graphics.getWidth();
+		screenHeight = Gdx.graphics.getHeight();
+
+		background1 = new Texture("beach_background.png");
+		background2 = new Texture("beach_background.png");
+
 		birds = new Texture[2];
 		birds[0] = new Texture("bird.png");
 		birds[1] = new Texture("bird2.png");
@@ -107,10 +118,10 @@ public class FlappyBird extends ApplicationAdapter {
 	@Override
 	public void render () {
 		batch.begin();
-		batch.draw(background,0,0,Gdx.graphics.getWidth() , Gdx.graphics.getHeight());
+		batch.draw(background1,backgroundOffset,0,screenWidth , screenHeight);
+		batch.draw(background2, backgroundOffset + screenWidth, 0, screenWidth, screenHeight);
 
 		if (gameState == 1) {
-
 			if (Gdx.input.justTouched()) {
 
 				velocity = -25;
@@ -203,6 +214,12 @@ public class FlappyBird extends ApplicationAdapter {
 		bitmapFont.draw(batch,Integer.toString(scores),200,200);
 
 		batch.end();
+
+		backgroundOffset -= backgroundVelocity;
+
+		if (backgroundOffset + screenWidth == 0) {
+			backgroundOffset = 0;
+		}
 
 		circle.set(Gdx.graphics.getWidth() / 2.0f
 				,birdY + birds[flapState].getWidth() / 2.0f
