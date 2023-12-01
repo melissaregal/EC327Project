@@ -74,17 +74,17 @@ public class FlappyBird extends ApplicationAdapter {
 
 		topTubeRectangle = new Rectangle[numberOfTube];
 		bottomTubeRectangle = new Rectangle[numberOfTube];
-		distanceBetweenTubes = (float) (Gdx.graphics.getWidth() / 2 );
+		distanceBetweenTubes = screenWidth / 2.0f;
 
 
-		birdY = Gdx.graphics.getHeight() / 2.0f - birds[flapState].getHeight() / 2.0f;
+		birdY = screenHeight / 2.0f - birds[flapState].getHeight() / 2.0f;
 
 		for (int i = 0 ; i < numberOfTube ; i++) {
 
-			tubeOffset[i] = (random.nextFloat() - 0.5f) * (Gdx.graphics.getHeight() - gap - 200);
+			tubeOffset[i] = (random.nextFloat() - 0.5f) * (screenHeight - gap - 200);
 
 
-			tubeX[i] = (float) (Gdx.graphics.getWidth() / 2 - topTube.getWidth() / 2 + Gdx.graphics.getWidth()
+			tubeX[i] = ((screenWidth / 2.0f) - (topTube.getWidth() / 2.0f) + screenWidth
 					+ i * distanceBetweenTubes);
 
 			topTubeRectangle[i] = new Rectangle();
@@ -95,7 +95,7 @@ public class FlappyBird extends ApplicationAdapter {
 	}
 
 	public void gameStart() {
-		birdY = Gdx.graphics.getHeight() / 2.0f - birds[flapState].getHeight() / 2.0f;
+		birdY = screenHeight / 2.0f - birds[flapState].getHeight() / 2.0f;
 
 		scoringTube = 0;
 		scores = 0;
@@ -103,10 +103,10 @@ public class FlappyBird extends ApplicationAdapter {
 
 		for (int i = 0 ; i < numberOfTube ; i++) {
 
-			tubeOffset[i] = (random.nextFloat() - 0.5f) * (Gdx.graphics.getHeight() - gap - 200);
+			tubeOffset[i] = (random.nextFloat() - 0.5f) * (screenHeight - gap - 200);
 
 
-			tubeX[i] = Gdx.graphics.getWidth() / 2.0f - topTube.getWidth() / 2.0f + Gdx.graphics.getWidth()
+			tubeX[i] = screenWidth / 2.0f - topTube.getWidth() / 2.0f + screenWidth
 					+ i * distanceBetweenTubes;
 
 			topTubeRectangle[i] = new Rectangle();
@@ -123,62 +123,46 @@ public class FlappyBird extends ApplicationAdapter {
 
 		if (gameState == 1) {
 			if (Gdx.input.justTouched()) {
-
 				velocity = -25;
 			}
 
-			if (tubeX[scoringTube] < Gdx.graphics.getWidth() / 2.0f) {
-
+			if (tubeX[scoringTube] < screenWidth / 2.0f) {
 				scores++;
-
 				if (scoringTube < numberOfTube - 1) {
-
 					scoringTube++;
-
 				} else {
-
 					scoringTube = 0;
-
 				}
-
 			}
 
 			for (int i = 0 ; i < numberOfTube ; i++) {
-
 				if (tubeX[i] < -topTube.getWidth()) {
-
 					tubeX[i] += numberOfTube * distanceBetweenTubes;
-
 				} else {
-
 					tubeX[i] -= tubeVelocity;
-
 				}
 
 				batch.draw(topTube,tubeX[i],
-						Gdx.graphics.getHeight() / 2.0f  + gap / 2 + tubeOffset[i]);
+						screenHeight / 2.0f  + gap / 2 + tubeOffset[i]);
 				batch.draw(bottomTube,tubeX[i],
-						Gdx.graphics.getHeight() / 2.0f - gap / 2 - bottomTube.getHeight() + tubeOffset[i]);
+						screenHeight / 2.0f - gap / 2 - bottomTube.getHeight() + tubeOffset[i]);
 
 				topTubeRectangle[i] = new Rectangle(tubeX[i],
-						Gdx.graphics.getHeight() / 2.0f  + gap / 2 + tubeOffset[i],
+						screenHeight / 2.0f  + gap / 2 + tubeOffset[i],
 						topTube.getWidth(),
 						topTube.getHeight());
 				bottomTubeRectangle[i] = new Rectangle(tubeX[i],
-						Gdx.graphics.getHeight() / 2.0f - gap / 2 - bottomTube.getHeight() + tubeOffset[i],
+						screenHeight / 2.0f - gap / 2 - bottomTube.getHeight() + tubeOffset[i],
 						bottomTube.getWidth(),
 						bottomTube.getHeight());
 			}
 
-			if (birdY > 0) {
+			if (birdY > -100 && birdY < screenHeight + 250) {
 				velocity += gravity;
 				birdY -= velocity;
 			} else {
-
 				gameState = 2;
-
 			}
-
 
 
 			if (flapState == 0) {
@@ -195,20 +179,18 @@ public class FlappyBird extends ApplicationAdapter {
 
 		} else if (gameState == 2) {
 
-			batch.draw(gameOver,Gdx.graphics.getWidth() / 2.0f - gameOver.getWidth() / 2.0f,
-					Gdx.graphics.getHeight() / 2.0f - gameOver.getHeight() / 2.0f);
+			batch.draw(gameOver,screenWidth / 2.0f - gameOver.getWidth() / 2.0f,
+					screenHeight/ 2.0f - gameOver.getHeight() / 2.0f);
 
 			if (Gdx.input.justTouched()) {
 
 				gameState = 1;
 
 				gameStart();
-
 			}
-
 		}
 
-		batch.draw(birds[flapState],Gdx.graphics.getWidth() / 2.0f - birds[flapState].getWidth() / 2.0f ,
+		batch.draw(birds[flapState],screenWidth / 2.0f - birds[flapState].getWidth() / 2.0f ,
 				birdY);
 
 		bitmapFont.draw(batch,Integer.toString(scores),200,200);
@@ -216,13 +198,11 @@ public class FlappyBird extends ApplicationAdapter {
 		batch.end();
 
 		backgroundOffset -= backgroundVelocity;
-
 		if (backgroundOffset + screenWidth == 0) {
 			backgroundOffset = 0;
 		}
 
-		circle.set(Gdx.graphics.getWidth() / 2.0f
-				,birdY + birds[flapState].getWidth() / 2.0f
+		circle.set(screenWidth / 2.0f ,birdY + birds[flapState].getWidth() / 2.0f
 				,birds[flapState].getWidth() / 2.0f);
 
 
@@ -233,13 +213,11 @@ public class FlappyBird extends ApplicationAdapter {
 				break;
 			}
 		shapeRenderer.end();
-
 	}
 
 	@Override
 	public void dispose () {
 		batch.dispose();
-
 	}
 }
 
