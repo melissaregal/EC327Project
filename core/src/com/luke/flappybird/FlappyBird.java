@@ -10,6 +10,7 @@ import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.Circle;
 import com.badlogic.gdx.math.Intersector;
 import com.badlogic.gdx.math.Rectangle;
+import com.badlogic.gdx.audio.Sound;
 import java.util.Random;
 
 public class FlappyBird extends ApplicationAdapter {
@@ -48,7 +49,10 @@ public class FlappyBird extends ApplicationAdapter {
 	short backgroundOffset;
 	float screenWidth;
 	float screenHeight;
-
+	Sound flapSound;
+	Sound bonkSound;
+	Sound offScreenSound;
+	boolean collisionSoundPlayed;
 	@Override
 	public void create () {
 		batch = new SpriteBatch();
@@ -76,7 +80,6 @@ public class FlappyBird extends ApplicationAdapter {
 		bottomTubeRectangle = new Rectangle[numberOfTube];
 		distanceBetweenTubes = screenWidth / 2.0f;
 
-
 		birdY = screenHeight / 2.0f - birds[flapState].getHeight() / 2.0f;
 
 		for (int i = 0 ; i < numberOfTube ; i++) {
@@ -91,7 +94,9 @@ public class FlappyBird extends ApplicationAdapter {
 			bottomTubeRectangle[i] = new Rectangle();
 
 		}
-
+		flapSound = Gdx.audio.newSound(Gdx.files.internal("flapsound.mp3"));
+		bonkSound = Gdx.audio.newSound(Gdx.files.internal("bonksound.mp3"));
+		offScreenSound = Gdx.audio.newSound(Gdx.files.internal("offscreensound.mp3"));
 	}
 
 	public void gameStart() {
@@ -101,17 +106,14 @@ public class FlappyBird extends ApplicationAdapter {
 		scores = 0;
 		velocity = 0;
 
+		collisionSoundPlayed = false;
+
 		for (int i = 0 ; i < numberOfTube ; i++) {
-
 			tubeOffset[i] = (random.nextFloat() - 0.5f) * (screenHeight - gap - 200);
-
-
 			tubeX[i] = screenWidth / 2.0f - topTube.getWidth() / 2.0f + screenWidth
 					+ i * distanceBetweenTubes;
-
 			topTubeRectangle[i] = new Rectangle();
 			bottomTubeRectangle[i] = new Rectangle();
-
 		}
 	}
 
@@ -124,6 +126,7 @@ public class FlappyBird extends ApplicationAdapter {
 		if (gameState == 1) {
 			if (Gdx.input.justTouched()) {
 				velocity = -25;
+				flapSound.play(5.0f);
 			}
 
 			if (tubeX[scoringTube] < screenWidth / 2.0f) {
@@ -142,8 +145,7 @@ public class FlappyBird extends ApplicationAdapter {
 					tubeX[i] -= tubeVelocity;
 				}
 
-				batch.draw(topTube,tubeX[i],
-						screenHeight / 2.0f  + gap / 2 + tubeOffset[i]);
+				batch.draw(topTube,tubeX[i],screenHeight / 2.0f  + gap / 2 + tubeOffset[i]);
 				batch.draw(bottomTube,tubeX[i],
 						screenHeight / 2.0f - gap / 2 - bottomTube.getHeight() + tubeOffset[i]);
 
@@ -161,9 +163,9 @@ public class FlappyBird extends ApplicationAdapter {
 				velocity += gravity;
 				birdY -= velocity;
 			} else {
+				offScreenSound.play(5.0f);
 				gameState = 2;
 			}
-
 
 			if (flapState == 0) {
 				flapState = 1;
@@ -172,20 +174,16 @@ public class FlappyBird extends ApplicationAdapter {
 			}
 
 		} else if(gameState == 0) {
-
 			if (Gdx.input.justTouched()) {
 				gameState = 1;
+				flapSound.play(5.0f);
 			}
-
 		} else if (gameState == 2) {
-
 			batch.draw(gameOver,screenWidth / 2.0f - gameOver.getWidth() / 2.0f,
 					screenHeight/ 2.0f - gameOver.getHeight() / 2.0f);
 
 			if (Gdx.input.justTouched()) {
-
 				gameState = 1;
-
 				gameStart();
 			}
 		}
@@ -205,10 +203,13 @@ public class FlappyBird extends ApplicationAdapter {
 		circle.set(screenWidth / 2.0f ,birdY + birds[flapState].getWidth() / 2.0f
 				,birds[flapState].getWidth() / 2.0f);
 
-
 		for (int i = 0 ; i < numberOfTube ; i++)
 			if (Intersector.overlaps(circle, topTubeRectangle[i])
 					|| Intersector.overlaps(circle, bottomTubeRectangle[i])) {
+				if (!collisionSoundPlayed) {
+					bonkSound.play(5.0f);
+					collisionSoundPlayed = true;
+				}
 				gameState = 2;
 				break;
 			}
@@ -218,6 +219,9 @@ public class FlappyBird extends ApplicationAdapter {
 	@Override
 	public void dispose () {
 		batch.dispose();
+		flapSound.dispose();
+		bonkSound.dispose();
+		offScreenSound.dispose();
 	}
 }
 
