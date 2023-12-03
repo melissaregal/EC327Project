@@ -35,6 +35,7 @@ public class FlappyBird extends ApplicationAdapter {
 	float distanceBetweenTubes;
 
 	Texture gameOver;
+	Texture tapToStart;
 
 	int scores = 0;
 	int scoringTube = 0;
@@ -65,9 +66,10 @@ public class FlappyBird extends ApplicationAdapter {
 		birds = new Texture[2];
 		birds[0] = new Texture("bird.png");
 		birds[1] = new Texture("bird2.png");
-		bottomTube = new Texture("bottomtube.png");
-		topTube = new Texture("toptube.png");
+		bottomTube = new Texture("grayBottomTube.png");
+		topTube = new Texture("grayTopTube.png");
 		gameOver = new Texture("gameOver.png");
+		tapToStart = new Texture("tapToStart.png");
 
 		bitmapFont = new BitmapFont();
 		bitmapFont.setColor(Color.WHITE);
@@ -123,8 +125,10 @@ public class FlappyBird extends ApplicationAdapter {
 		batch.draw(background1,backgroundOffset,0,screenWidth , screenHeight);
 		batch.draw(background2, backgroundOffset + screenWidth, 0, screenWidth, screenHeight);
 
+
 		if (gameState == 1) {
 			if (Gdx.input.justTouched()) {
+				batch.draw(tapToStart, screenWidth + tapToStart.getWidth(), screenHeight + tapToStart.getHeight());
 				velocity = -25;
 				flapSound.play(5.0f);
 			}
@@ -174,6 +178,8 @@ public class FlappyBird extends ApplicationAdapter {
 			}
 
 		} else if(gameState == 0) {
+			batch.draw(tapToStart,screenWidth / 2.0f - tapToStart.getWidth() / 2.0f,
+					screenHeight/ 2.0f - tapToStart.getHeight() / 0.25f);
 			if (Gdx.input.justTouched()) {
 				gameState = 1;
 				flapSound.play(5.0f);
