@@ -36,10 +36,14 @@ public class FlappyBird extends ApplicationAdapter {
 
 	Texture gameOver;
 	Texture tapToStart;
+	Texture bestScore;
 
 	int scores = 0;
+	int highscore = 0;
 	int scoringTube = 0;
 	BitmapFont bitmapFont;
+
+	BitmapFont bitmapFont2;
 
 	ShapeRenderer shapeRenderer;
 	Circle circle;
@@ -70,10 +74,15 @@ public class FlappyBird extends ApplicationAdapter {
 		topTube = new Texture("grayTopTube.png");
 		gameOver = new Texture("gameOver.png");
 		tapToStart = new Texture("tapToStart.png");
+		bestScore = new Texture("bestScore.png");
 
 		bitmapFont = new BitmapFont();
 		bitmapFont.setColor(Color.WHITE);
 		bitmapFont.getData().scale(10);
+
+		bitmapFont2 = new BitmapFont();
+		bitmapFont2.setColor(Color.WHITE);
+		bitmapFont2.getData().scale(5);
 
 		shapeRenderer = new ShapeRenderer();
 		circle = new Circle();
@@ -135,6 +144,9 @@ public class FlappyBird extends ApplicationAdapter {
 
 			if (tubeX[scoringTube] < screenWidth / 2.0f) {
 				scores++;
+				if(scores > highscore){
+					highscore = scores;
+				}
 				if (scoringTube < numberOfTube - 1) {
 					scoringTube++;
 				} else {
@@ -199,7 +211,11 @@ public class FlappyBird extends ApplicationAdapter {
 		batch.draw(birds[flapState],screenWidth / 2.0f - birds[flapState].getWidth() / 2.0f ,
 				birdY);
 
+
+		batch.draw(bestScore, 50,  screenHeight - 200 - bestScore.getHeight());
+
 		bitmapFont.draw(batch,Integer.toString(scores),200,200);
+		bitmapFont2.draw(batch,Integer.toString(highscore), 100 + bestScore.getWidth(),screenHeight - 190);
 
 		batch.end();
 
