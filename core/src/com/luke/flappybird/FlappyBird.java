@@ -188,7 +188,7 @@ public class FlappyBird extends ApplicationAdapter {
 			batch.draw(gameOver,screenWidth / 2.0f - gameOver.getWidth() / 2.0f,
 					screenHeight/ 2.0f - gameOver.getHeight() / 2.0f);
 			batch.draw(tapToStart, screenWidth / 2.0f - tapToStart.getWidth() / 2.0f,
-					screenHeight / 2.5f - tapToStart.getHeight() / 2.5f);
+					screenHeight / 2.3f - tapToStart.getHeight() / 2.3f);
 
 			if (Gdx.input.justTouched()) {
 				gameState = 1;
